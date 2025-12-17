@@ -10,10 +10,14 @@ def seatslct(lsSeats):
     selectedSeats=[]
     print("Ketersediaan kursi (O: Tersedia, X: Terisi):")
 
-    for i, row in enumerate(lsSeats[1]):
+    for i, row in enumerate(lsSeats[1:]):
         print(f"Baris {i+1}: " + " ".join(['O' if seat else 'X' for seat in row]))
     while True:
-
+        print("Masukkan kursi yang ingin dipilih (format: baris,kolom) atau 'selesai' untuk mengakhiri:")
+        selectedSeats.append(inputSeatInput := input())
+        seatInput = inputSeatInput.strip()
+        if seatInput.lower() == 'selesai':
+            break
 def stdfull(seatsStudio):
     return all(
         not seat
