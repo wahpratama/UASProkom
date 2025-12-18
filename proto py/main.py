@@ -5,15 +5,25 @@ def movslct(lsMovies):
             print(f"{i+1}. {judul} ({', '.join(genre)}). Durasi: {durasi} menit. Harga tiket: Rp{harga}")         
     inputMovie = int(input("Pilih film yang ingin ditonton:"))
     return inputMovie - 1
+
+def movieselect(lsMovies):
+    selectedMovie = lsMovies[movslct(lsMovies)]
+    studio, judul, durasi, harga, genre = selectedMovie
+    print(f"Anda memilih film: {judul}")
+    return selectedMovie
     
 def seatslct(lsSeats):
+    global selectedMovie, studio, judul, durasi, harga, genre
     selectedSeats=[]
     print("Ketersediaan kursi (O: Tersedia, X: Terisi):")
     for i, row in enumerate(lsSeats[1:]):
         print(f"Baris {i+1}: " + " ".join(['O' if seat else 'X' for seat in row]))
     if stdfull(lsSeats[1:]):
+        selectedMovie = lsMovies[movslct(lsMovies)]
+        studio, judul, durasi, harga, genre = selectedMovie
         print("Maaf, semua kursi sudah penuh. pilih film atau jam lain.")
-        return selectedSeats
+
+        return 
     while not stdfull(lsSeats[1:]):
         print("Masukkan kursi yang ingin dipilih (format: baris,kolom) atau 'selesai' untuk mengakhiri:")
         selectedSeats.append(inputSeatInput := input())
@@ -38,7 +48,6 @@ seats = [[1,[False, True, True, True, True],
             [False, False, False, False, False]]]
 
 print("Daftar film yang tersedia:")
-selectedMovie = lsMovies[movslct(lsMovies)]
-studio, judul, durasi, harga, genre = selectedMovie
+movieselect(lsMovies)
 print(f"Anda memilih film: {judul}")
 selectedSeats = seatslct(seats[studio-1])
