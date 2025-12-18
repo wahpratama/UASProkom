@@ -9,21 +9,21 @@ def movslct(lsMovies):
 def seatslct(lsSeats):
     selectedSeats=[]
     print("Ketersediaan kursi (O: Tersedia, X: Terisi):")
-
     for i, row in enumerate(lsSeats[1:]):
         print(f"Baris {i+1}: " + " ".join(['O' if seat else 'X' for seat in row]))
-    while True:
+    if stdfull(lsSeats[1:]):
+        print("Maaf, semua kursi sudah penuh. pilih film atau jam lain.")
+        return selectedSeats
+    while not stdfull(lsSeats[1:]):
         print("Masukkan kursi yang ingin dipilih (format: baris,kolom) atau 'selesai' untuk mengakhiri:")
         selectedSeats.append(inputSeatInput := input())
         seatInput = inputSeatInput.strip()
         if seatInput.lower() == 'selesai':
             break
+
 def stdfull(seatsStudio):
-    return all(
-        not seat
-        for row in seatsStudio
-        for seat in row
-    )
+    return all(not seat for row in seatsStudio for seat in row)
+
 data=[]
 
 lsMovies = [(1, "Avengers: Doomsday", 158, 75000, {"Aksi", "Fiksi Ilmiah", "Pahlawan Super"})
