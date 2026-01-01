@@ -8,39 +8,49 @@ def movslct(lsMovies):
     for i, movie in enumerate(lsMovies):
         if len(movie) == 5:
             studio, judul, durasi, harga, genre = movie
-            print(f"{i+1}. {judul} ({', '.join(genre)}). Durasi: {durasi} menit. Harga tiket: Rp{harga}")         
+            print(f"{i+1}. {judul} ({', '.join(genre)}). Durasi: {durasi} menit. Harga tiket: Rp{harga}. Studio: {studio}")         
     inputMovie = int(input("Pilih film yang ingin ditonton:"))
     selectedMovie = lsMovies[inputMovie-1]
-    print(f"Anda memilih film: {lsMovies[inputMovie-1]}")
-    return lsMovies[inputMovie-1]
-
-def seatpdt(lsSeats, row, col):
-    if 0 <= row < len(lsSeats) and 0 <= col < len(lsSeats[0]):
-        if lsSeats[row][col]:
-            lsSeats[row][col] = False
-            print(f"Kursi di baris {row + 1}, kolom {col + 1} berhasil dipilih.")
-        else:
-            print(f"Kursi di baris {row + 1}, kolom {col + 1} sudah terisi. Silakan pilih kursi lain.")
-    else:
-        print("Input kursi tidak valid. Silakan coba lagi.")
+    studio, judul, durasi, harga, genre = selectedMovie
+    print(f"Anda memilih film: {judul}")
+    return selectedMovie
 
 def seatslct(lsSeats):
-    global selectedMovie, studio, judul, durasi, harga, genre, lsMovies
-    selectedSeats=[]
+    global seatsStudio, lsMovies, selectedMovie
+    seatsStudio = lsSeats
+    selectedSeats = []
     print("Ketersediaan kursi (O: Tersedia, X: Terisi):")
     for i, row in enumerate(lsSeats):
         print(f"Baris {i+1}: " + " ".join(['O' if seat else 'X' for seat in row]))
-    if stdfull(lsSeats):
+    while not stdfull(seatsStudio):
+        seatInput = input("Pilih kursi (baris,kolom) atau 'selesai': ").strip()
+
+        if seatInput.lower() == 'selesai':
+            break
+        try:
+            row, col = map(int, seatInput.split(','))
+            row -= 1
+            col -= 1
+
+            if 0 <= row < len(lsSeats) and 0 <= col < len(lsSeats[0]):
+                if lsSeats[row][col]:
+                    lsSeats[row][col] = False
+                    selectedSeats.append((row+1, col+1))
+                    print("Kursi berhasil dipilih.")
+                else:
+                    print("Kursi sudah terisi.")
+            else:
+                print("Nomor kursi tidak valid.")
+        except:
+            print("Format salah! Contoh: 2,3")
+    if stdfull(seatsStudio):
+        print("Maaf, semua kursi sudah terisi.")
+        print("Anda dapat memilih film lain atau jadwal lain.")
         selectedMovie = movslct(lsMovies)
-        print(f"baik kamu akan menonton film {judul}\n")
-        seatslct(lsSeats)
-    else:
-        while not stdfull(lsSeats):
-            print("Masukkan kursi yang ingin dipilih (format: baris,kolom) atau 'selesai' untuk mengakhiri:")
-            selectedSeats.append(inputSeatInput := input())
-            seatInput = inputSeatInput.strip()
-            if seatInput.lower() == 'selesai':
-                break
+        studio, judul, durasi, harga, genre = selectedMovie
+        selectedSeats = seatslct(seats[studio])
+    
+    return selectedSeats
 
 def stdfull(seatsStudio):
     return all(not seat for row in seatsStudio for seat in row)
@@ -74,22 +84,35 @@ debitsaldo=1000000
 lsMovies = [(1, "Avengers: Doomsday", 158, 75000, {"Aksi", "Fiksi Ilmiah", "Pahlawan Super"})
             ,(2, "The Batman: Part II", 100, 50000, {"Aksi", "Drama", "Kejahatan"})]
 
-seats = [[[False, True, True, True, True],
-              [True, True, False, True, True],
-              [True, True, True, True, False],
-              [True, False, True, True, True],],[
-            [False, False, False, False, False],
-            [False, False, False, False, False],
-            [False, False, False, False, False],
-            [False, False, False, False, False]]]
+seats = {
+    1: [
+        [False, True, True, True, True],
+        [True, True, False, True, True],
+        [True, True, True, True, False],
+        [True, False, True, True, True]
+    ],
+    2: [
+        [False, False, False, False, False],
+        [False, False, False, False, False],
+        [False, False, False, False, False],
+        [False, False, False, False, False]
+    ]
+}
 
 #pemrosesan utama
 def main():
     print("Daftar film yang tersedia:")
     selectedMovie = movslct(lsMovies)
     studio, judul, durasi, harga, genre = selectedMovie
-    print(f"baik kamu akan menonton film {judul}\n")
-    selectedSeats = seatslct(seats[studio-1][0:])
+    print(f"\nAnda akan menonton: {judul}")
+    print(f"Studio: {studio}")
+    selectedSeats = seatslct(seats[studio])
+    if not selectedSeats:
+        print("Trimakasih telah berkunjung :).")
+        return
+    totalHarga = harga * len(selectedSeats)
+    if processPayment(totalHarga):
+        printTicket(judul, durasi, harga, selectedSeats)
 
 
 if __name__ == "__main__":
