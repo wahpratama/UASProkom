@@ -51,14 +51,14 @@ def seatslct(lsSeats):
         selectedSeats = seatslct(seats[studio])
     
     return selectedSeats
-
+# validator kursi penuh
 def stdfull(seatsStudio):
     return all(not seat for row in seatsStudio for seat in row)
 
 def printTicket(judul, durasi, harga, selectedSeats):
     print("\n--- Tiket Bioskop ---")
     print(f"Film: {judul}")
-    print(f"Durasi: {durasi} menit")
+    print(f"Durasi: {durasi} menit")``
     print(f"Harga per tiket: Rp{harga}")
     print("Kursi yang dipilih:")
     for seat in selectedSeats:
