@@ -2,6 +2,30 @@
 Program Pemesanan Tiket Bioskop Sederhana
 Fitur: lihat daftar film => pilih film => pilih seat => bayar tiket => cetak tiket
 """
+from payment import createPaymentProcessor
+# data 
+payment = createPaymentProcessor(1000000)
+data=[]
+
+debitsaldo=1000000
+
+lsMovies = [(1, "Avengers: Doomsday", 158, 75000, {"Aksi", "Fiksi Ilmiah", "Pahlawan Super"})
+            ,(2, "The Batman: Part II", 100, 50000, {"Aksi", "Drama", "Kejahatan"})]
+
+seats = {
+    1: [
+        [False, True, True, True, True],
+        [True, True, False, True, True],
+        [True, True, True, True, False],
+        [True, False, True, True, True]
+    ],
+    2: [
+        [False, False, False, False, False],
+        [False, False, False, False, False],
+        [False, False, False, False, False],
+        [False, False, False, False, False]
+    ]
+}
 # kumpulan fungsi
 def movslct(lsMovies):
     global selectedMovie
@@ -58,7 +82,7 @@ def stdfull(seatsStudio):
 def printTicket(judul, durasi, harga, selectedSeats):
     print("\n--- Tiket Bioskop ---")
     print(f"Film: {judul}")
-    print(f"Durasi: {durasi} menit")``
+    print(f"Durasi: {durasi} menit")
     print(f"Harga per tiket: Rp{harga}")
     print("Kursi yang dipilih:")
     for seat in selectedSeats:
@@ -66,40 +90,9 @@ def printTicket(judul, durasi, harga, selectedSeats):
     totalHarga = harga * len(selectedSeats)
     print(f"Total Harga: Rp{totalHarga}")
     print("---------------------\n")
-def processPayment(totalHarga):
-    global debitsaldo
-    if debitsaldo >= totalHarga:
-        debitsaldo -= totalHarga
-        print(f"Pembayaran berhasil! Sisa saldo Anda: Rp{debitsaldo}")
-        return True
-    else:
-        print("Saldo tidak mencukupi untuk melakukan pembayaran.")
-        return False
 
-# data 
-data=[]
 
-debitsaldo=1000000
-
-lsMovies = [(1, "Avengers: Doomsday", 158, 75000, {"Aksi", "Fiksi Ilmiah", "Pahlawan Super"})
-            ,(2, "The Batman: Part II", 100, 50000, {"Aksi", "Drama", "Kejahatan"})]
-
-seats = {
-    1: [
-        [False, True, True, True, True],
-        [True, True, False, True, True],
-        [True, True, True, True, False],
-        [True, False, True, True, True]
-    ],
-    2: [
-        [False, False, False, False, False],
-        [False, False, False, False, False],
-        [False, False, False, False, False],
-        [False, False, False, False, False]
-    ]
-}
-
-#pemrosesan utama
+#main program
 def main():
     print("Daftar film yang tersedia:")
     selectedMovie = movslct(lsMovies)
@@ -111,8 +104,12 @@ def main():
         print("Trimakasih telah berkunjung :).")
         return
     totalHarga = harga * len(selectedSeats)
-    if processPayment(totalHarga):
+    if payment(totalHarga):
         printTicket(judul, durasi, harga, selectedSeats)
+    if input("Ingin memesan tiket lagi? (y/n): ").lower() == 'y':
+        main()
+    else :
+        print("Terima kasih telah menggunakan layanan kami!")
 
 
 if __name__ == "__main__":
